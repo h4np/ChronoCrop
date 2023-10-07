@@ -1,4 +1,4 @@
-module chronoCropper/init
+module chronocut/init
 
 go 1.21.1
 
