@@ -14,14 +14,18 @@ import (
 func main() {
 	app := app.New()
 	window := app.NewWindow("Chronocut")
+	views := topTabs(app, window)
 
-	window.SetContent(renderUI(app, window))
+	UI := container.NewVBox(
+		views,
+	)
+
+	window.SetContent(UI)
 	window.Resize(fyne.NewSize(600, 600))
 	window.ShowAndRun()
 }
 
-func renderUI(app fyne.App, window fyne.Window) *fyne.Container {
-	tabs := topTabs()
+func videoPage(app fyne.App, window fyne.Window) *fyne.Container {
 
 	fileNameLabel := widget.NewLabel("Selected file: ")
 
@@ -44,7 +48,6 @@ func renderUI(app fyne.App, window fyne.Window) *fyne.Container {
 	})
 
 	UI := container.NewVBox(
-		tabs,
 		fileNameLabel,
 		selectButton,
 		quitButton,
@@ -53,9 +56,9 @@ func renderUI(app fyne.App, window fyne.Window) *fyne.Container {
 	return UI
 }
 
-func topTabs() *container.AppTabs {
+func topTabs(app fyne.App, window fyne.Window) *container.AppTabs {
 	tabs := container.NewAppTabs(
-		container.NewTabItemWithIcon("Video", theme.FileVideoIcon(), widget.NewLabel("")),
+		container.NewTabItemWithIcon("Video", theme.FileVideoIcon(), videoPage(app, window)),
 		container.NewTabItemWithIcon("Download", theme.DownloadIcon(), widget.NewLabel("")),
 		container.NewTabItemWithIcon("Settings", theme.SettingsIcon(), widget.NewLabel("")),
 	)
