@@ -1,4 +1,4 @@
-module chronocut/init
+module chronocut
 
 go 1.21
 
