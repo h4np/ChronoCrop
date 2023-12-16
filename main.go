@@ -1,7 +1,11 @@
 package main
 
 import (
+	"chronocut/ffmpeg"
 	"chronocut/utils"
+	"fmt"
+	"os/exec"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
@@ -18,6 +22,15 @@ func main() {
 	UI := container.NewHBox(
 		views,
 	)
+	filepath := "/home/dft/Yakuza 0 - Friday Night.mp4"
+	ffcmd := exec.Command("ffmpeg", "-i", filepath, "-f", "null", "-")
+
+	out, err := ffcmd.CombinedOutput()
+	utils.HandleError("error starting ffmpeg", err)
+
+	duration, err := ffmpeg.GetDuration(string(out))
+	utils.HandleError("Couldnt get duration", err)
+	fmt.Println(duration[:8])
 
 	window.SetContent(UI)
 	window.Resize(fyne.NewSize(600, 600))
@@ -25,14 +38,22 @@ func main() {
 }
 
 func videoPage(app fyne.App, window fyne.Window) *fyne.Container {
-
 	fileNameLabel := widget.NewLabel("Selected file: ")
 
 	selectButton := widget.NewButton("Select file", func() {
 		dialog.NewFileOpen(func(reader fyne.URIReadCloser, err error) {
-			utils.HandleError("File open error: ", err)
+			utils.HandleError("File open error", err)
 
+			filepath := reader.URI().Path()
 			fileNameLabel.SetText("Selected file: " + reader.URI().Path())
+			ffcmd := exec.Command("ffmpeg", "-i", filepath, "-f", "null", "-")
+
+			out, err := ffcmd.CombinedOutput()
+			utils.HandleError("error starting ffmpeg", err)
+
+			duration, err := ffmpeg.GetDuration(string(out))
+			utils.HandleError("Couldnt get duration", err)
+			fmt.Println(duration[:8])
 
 		}, window).Show()
 	})
